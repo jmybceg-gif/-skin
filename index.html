@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Skin79 · 优秀美肌顾问人格潜能测评 | 连锁美业专属</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: #f2efe7;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'PingFang SC', 'Roboto', Helvetica, sans-serif;
+            color: #2c2a29;
+            padding: 1.5rem 1rem;
+        }
+        .container { max-width: 980px; margin: 0 auto; }
+        
+        .brand {
+            background: white;
+            border-radius: 36px;
+            padding: 0.8rem 1.8rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+            border: 1px solid #e5ded5;
+        }
+        .logo-area { display: flex; align-items: center; gap: 14px; }
+        .logo-icon {
+            width: 52px; height: 52px;
+            background: linear-gradient(135deg, #b28b5e, #7b4a21);
+            border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        .logo-icon span { font-size: 28px; font-weight: 700; color: white; letter-spacing: 1px; }
+        .logo-text h1 { font-size: 1.8rem; font-weight: 650; color: #3f2c1c; letter-spacing: 1px; margin-bottom: 0.05rem; }
+        .logo-text p { font-size: 0.72rem; color: #8b7a6b; letter-spacing: 0.3px; }
+        .timer-box {
+            background: #f4ede5; padding: 0.4rem 1.2rem; border-radius: 60px;
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 600; font-size: 1.1rem; font-family: monospace;
+            letter-spacing: 1px; color: #6e4a28; border: 1px solid #e2d4c7;
+        }
+        .timer-box span:first-child { font-size: 0.9rem; font-weight: normal; }
+        .badge {
+            background: #f4ede5; padding: 0.5rem 1.2rem; border-radius: 40px;
+            font-size: 0.75rem; color: #8b5a2b; font-weight: 600;
+        }
+        
+        .card {
+            background: white; border-radius: 32px; padding: 1.6rem 1.6rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.03);
+            border: 1px solid #ece3db;
+        }
+        .card h2 {
+            font-size: 1.3rem; font-weight: 620; color: #3a2c21;
+            border-left: 4px solid #b28b5e; padding-left: 14px; margin-bottom: 1rem;
+        }
+        .intro-text {
+            font-size: 0.92rem; color: #5f5346; margin-bottom: 1rem;
+            line-height: 1.5; background: #fefaf5;
+            padding: 0.8rem 1rem; border-radius: 24px;
+        }
+        
+        .info-collect {
+            background: #f7f3ef; border-radius: 20px;
+            padding: 1rem 1.2rem; margin-bottom: 1rem;
+            border: 1px solid #e2d8cf;
+        }
+        .info-collect-title {
+            font-size: 0.85rem; font-weight: 600; color: #6e4a28;
+            margin-bottom: 0.6rem;
+        }
+        .info-collect-row {
+            display: flex; flex-wrap: wrap; gap: 0.6rem;
+        }
+        .info-collect-row input {
+            flex: 1; min-width: 100px;
+            padding: 0.5rem 0.8rem; border-radius: 12px;
+            border: 1px solid #d4c8bc; background: white;
+            font-size: 0.85rem; font-family: inherit;
+            color: #3a2c21;
+        }
+        .info-collect-row input:focus {
+            outline: none; border-color: #b28b5e;
+            box-shadow: 0 0 0 2px rgba(178,139,94,0.15);
+        }
+        .info-collect-row input::placeholder { color: #a09080; }
+        
+        .progress-area {
+            display: flex; justify-content: space-between; align-items: center;
+            gap: 1rem; margin-bottom: 0.5rem;
+        }
+        .progress-stats {
+            font-size: 0.75rem; font-weight: 500; color: #8b6f54;
+            background: #f4ede5; padding: 0.2rem 0.8rem; border-radius: 30px;
+        }
+        .progress-wrapper {
+            background: #f0eae3; border-radius: 40px; height: 8px; flex: 1;
+        }
+        .progress-fill {
+            background: #b28b5e; width: 0%; height: 8px;
+            border-radius: 40px; transition: width 0.2s ease;
+        }
+        .question-item {
+            background: #fefcf9; border-radius: 24px;
+            padding: 1rem 1.2rem; margin-bottom: 1rem;
+            border: 1px solid #eee5dc; transition: all 0.15s;
+        }
+        .q-text {
+            font-weight: 520; font-size: 0.96rem;
+            margin-bottom: 0.8rem; color: #2c2a29; line-height: 1.4;
+        }
+        .options {
+            display: flex; flex-wrap: wrap; gap: 0.55rem;
+            align-items: center; justify-content: flex-start;
+        }
+        .option-label {
+            display: inline-flex; align-items: center;
+            background: #f7f3ef; padding: 0.45rem 1rem;
+            border-radius: 40px; font-size: 0.8rem;
+            cursor: pointer; transition: 0.1s;
+            border: 1px solid #e2d8cf; font-weight: 450;
+        }
+        .option-label.selected {
+            background: #e9ddd1; border-color: #b28b5e;
+            color: #4a3727; font-weight: 550;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+        input[type="radio"] { display: none; }
+        .btn {
+            background: #8b5a2b; color: white; border: none;
+            padding: 0.9rem 1.5rem; font-size: 1rem;
+            font-weight: 550; border-radius: 56px;
+            cursor: pointer; transition: 0.2s;
+            width: 100%; margin-top: 0.8rem;
+            font-family: inherit;
+        }
+        .btn-secondary {
+            background: #c6b19b; margin-top: 0.6rem;
+        }
+        .btn:hover { background: #6e451e; transform: translateY(-1px); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        
+        .results-table-wrapper { overflow-x: auto; margin: 1.2rem 0 0.8rem; }
+        .personality-table {
+            width: 100%; border-collapse: collapse; font-size: 0.85rem;
+            background: #fffbf5; border-radius: 20px;
+            overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .personality-table th {
+            background: #e9ddd1; color: #4a3727;
+            padding: 10px 8px; font-weight: 600; text-align: center;
+        }
+        .personality-table td {
+            border-bottom: 1px solid #eedfcb;
+            padding: 10px 8px; text-align: center; color: #2f2a25;
+        }
+        .personality-table tr:last-child td { border-bottom: none; }
+        .level-badge {
+            display: inline-block; background: #f0e2d4;
+            padding: 0.2rem 0.6rem; border-radius: 20px;
+            font-size: 0.75rem; font-weight: 500;
+        }
+        .level-high { background: #c8e0cf; color: #2b6e3c; }
+        .level-mid { background: #f8e5c2; color: #b8681a; }
+        .level-low { background: #f4d5cf; color: #b13e2a; }
+        .timer-used {
+            font-size: 0.85rem; background: #f2ebe1;
+            display: inline-block; padding: 0.2rem 1rem;
+            border-radius: 20px; margin-bottom: 0.8rem;
+        }
+        
+        .dimension-row { margin-bottom: 0.8rem; }
+        .dimension-name {
+            display: flex; justify-content: space-between;
+            font-size: 0.85rem; color: #5f5346; margin-bottom: 0.3rem;
+        }
+        .bar-bg {
+            background: #f0eae3; border-radius: 20px; height: 16px;
+        }
+        .bar-fill {
+            height: 16px; border-radius: 20px;
+            transition: width 0.6s ease;
+        }
+        .interpret {
+            background: #fefaf5; border-radius: 20px;
+            padding: 1rem 1.2rem; margin-top: 1rem;
+            font-size: 0.9rem; line-height: 1.6; color: #5f5346;
+            border: 1px solid #f0e6da;
+        }
+        
+        .upload-status {
+            text-align: center; padding: 0.6rem;
+            border-radius: 16px; margin-top: 0.8rem;
+            font-size: 0.85rem; display: none;
+        }
+        .upload-status.success { background: #d4edda; color: #155724; display: block; }
+        .upload-status.error { background: #f8d7da; color: #721c24; display: block; }
+        .upload-status.loading { background: #fff3cd; color: #856404; display: block; }
+        
+        footer {
+            text-align: center; font-size: 0.7rem;
+            color: #ac9f90; margin-top: 1rem;
+        }
+        
+        @media (max-width: 680px) {
+            .options { gap: 0.45rem; }
+            .option-label { padding: 0.35rem 0.75rem; font-size: 0.7rem; }
+            .personality-table th, .personality-table td {
+                padding: 6px 4px; font-size: 0.75rem;
+            }
+            .info-collect-row input { min-width: 80px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="brand">
+        <div class="logo-area">
+            <div class="logo-icon"><span>79</span></div>
+            <div class="logo-text">
+                <h1>Skin79</h1>
+                <p>美肌人才潜能中心 · 连锁美业专属</p>
+            </div>
+        </div>
+        <div class="timer-box" id="timerDisplay">
+            <span>⏱️ 用时</span>
+            <span id="timerValue">00:00</span>
+        </div>
+        <div class="badge">大五人格 · 优秀美肌顾问模型</div>
+    </div>
+
+    <div class="card">
+        <h2>✨ 优秀美肌顾问人格特质测评</h2>
+        <div class="intro-text">
+            🌟 顶尖美肌顾问 = 社交敏锐 + 高度尽责 + 持续求知 + 情绪韧性 + 极致共情。<br>
+            本测评基于心理学大五人格（OCEAN），共60题，约6-10分钟。请根据第一直觉作答，生成"五大结果表格+适配度报告"，精准识别美业高潜人才。
+        </div>
+        
+        <div class="info-collect">
+            <div class="info-collect-title">📍 请先填写基本信息（数据将同步至总部后台）</div>
+            <div class="info-collect-row">
+                <input type="text" id="userCity" placeholder="城市（如：成都）" autocomplete="off">
+                <input type="text" id="userStore" placeholder="门店（如：春熙路店）" autocomplete="off">
+                <input type="text" id="userName" placeholder="姓名" autocomplete="off">
+            </div>
+        </div>
+        
+        <div class="progress-area">
+            <div class="progress-wrapper">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="progress-stats" id="progressStats">0 / 60</div>
+        </div>
+        <div id="questionsArea"></div>
+        <button class="btn" id="submitBtn">✨ 生成美肌适配报告 ✨</button>
+        <button class="btn btn-secondary" id="resetBtn" style="background:#c0aa96;">⟳ 重新测评 (重置计时/清除答案)</button>
+        <div class="upload-status" id="uploadStatus"></div>
+        <div class="info-tip" style="margin-top: 12px; text-align:center; font-size:0.7rem; color:#9e846c;">
+            ✔ 每题自动保存，可随时刷新继续答题，计时从页面加载开始，重置后重新计时
+        </div>
+    </div>
+
+    <div id="resultCard" class="card" style="display: none;">
+        <h2>📋 美肌顾问 · 大五人格综合评估</h2>
+        <div id="resultContent"></div>
+        <div id="tableResultArea" style="margin-top: 20px;"></div>
+        <div class="interpret" id="interpretText"></div>
+    </div>
+    <footer>Skin79 连锁美业人才发展中心 | 测评结果精准匹配"优秀美肌顾问"核心特质，仅供内部潜能开发参考</footer>
+</div>
+
+<script>
+    const CLOUD_FUNCTION_URL = "https://1258853028-lpz8l5utu9.ap-guangzhou.tencentscf.com";
+
+    const questions = [
+        { text: "我喜欢探索新的皮肤管理技术和成分。", dim: "O", reverse: false },
+        { text: "我经常思考皮肤问题的深层原因，而不仅仅是表面护理。", dim: "O", reverse: false },
+        { text: "我对艺术、美学和设计有较高的兴趣。", dim: "O", reverse: false },
+        { text: "我不太愿意改变已经习惯的服务流程。(R)", dim: "O", reverse: true },
+        { text: "我喜欢学习陌生的护肤理论，即使它很复杂。", dim: "O", reverse: false },
+        { text: "我经常会尝试不同风格的沟通方式来适应客户。", dim: "O", reverse: false },
+        { text: "相比传统方法，我更倾向使用新科技仪器。", dim: "O", reverse: false },
+        { text: "我不太关注行业新动态和新成分。(R)", dim: "O", reverse: true },
+        { text: "我觉得按照标准话术更安全，不喜欢自由发挥。(R)", dim: "O", reverse: true },
+        { text: "我乐于接受工作中意料之外的变化。", dim: "O", reverse: false },
+        { text: "对护肤品成分的好奇心促使我不断查阅资料。", dim: "O", reverse: false },
+        { text: "我不太擅长从客户的不同角度思考问题。(R)", dim: "O", reverse: true },
+        { text: "我做事有条理，服务前会准备好所有工具。", dim: "C", reverse: false },
+        { text: "我会严格遵守门店SOP，注重细节。", dim: "C", reverse: false },
+        { text: "我常常会提前计划好每日的客户预约。", dim: "C", reverse: false },
+        { text: "我偶尔会忽略一些服务中的卫生细节。(R)", dim: "C", reverse: true },
+        { text: "我能够坚持完成繁琐的皮肤档案记录。", dim: "C", reverse: false },
+        { text: "我做事效率高，不拖延。", dim: "C", reverse: false },
+        { text: "我很少丢三落四，工作台总是整洁。", dim: "C", reverse: false },
+        { text: "遇到复杂的客诉，我会想逃避而不是解决。(R)", dim: "C", reverse: true },
+        { text: "我对自己的职业成长有清晰的规划。", dim: "C", reverse: false },
+        { text: "我经常因为粗心导致小失误。(R)", dim: "C", reverse: true },
+        { text: "我能按时完成店长布置的非业绩类任务。", dim: "C", reverse: false },
+        { text: "我重视承诺，答应的事情一定做到。", dim: "C", reverse: false },
+        { text: "我喜欢和陌生人主动打招呼，并自然聊天。", dim: "E", reverse: false },
+        { text: "在团队中我经常是活跃气氛的人。", dim: "E", reverse: false },
+        { text: "面对新客户，我会主动破冰并建立信任。", dim: "E", reverse: false },
+        { text: "我更倾向一个人安静工作，不太喜欢社交。(R)", dim: "E", reverse: true },
+        { text: "我能够热情地向客户介绍项目，不怯场。", dim: "E", reverse: false },
+        { text: "休息时我喜欢和朋友聚会，而不是独处。", dim: "E", reverse: false },
+        { text: "我享受为客户提供情绪价值的过程。", dim: "E", reverse: false },
+        { text: "我在公开场合讲话会感到紧张不自在。(R)", dim: "E", reverse: true },
+        { text: "我觉得跟不同类型的客户打交道很有趣。", dim: "E", reverse: false },
+        { text: "我常常成为团队讨论的核心。", dim: "E", reverse: false },
+        { text: "我很少主动邀约客户回访。(R)", dim: "E", reverse: true },
+        { text: "我喜欢将自己的护肤经验分享给同事。", dim: "E", reverse: false },
+        { text: "我善于察觉客户的情绪和潜在需求。", dim: "A", reverse: false },
+        { text: "即使客户态度不好，我也会保持耐心和笑容。", dim: "A", reverse: false },
+        { text: "我喜欢帮助他人，并从中获得满足感。", dim: "A", reverse: false },
+        { text: "有时候我会为了业绩而忽略客户的真实感受。(R)", dim: "A", reverse: true },
+        { text: "我愿意倾听同事的烦恼，并给出支持。", dim: "A", reverse: false },
+        { text: "发生冲突时，我会尽量站在对方角度思考。", dim: "A", reverse: false },
+        { text: "我比较坦率直接，有时会忽略礼貌。(R)", dim: "A", reverse: true },
+        { text: "我会尽量配合团队的安排，不搞特殊化。", dim: "A", reverse: false },
+        { text: "我信任大多数同事，愿意合作。", dim: "A", reverse: false },
+        { text: "客户提出额外要求时，我会先抱怨再处理。(R)", dim: "A", reverse: true },
+        { text: "我认为服务行业需要真诚，而不是套路。", dim: "A", reverse: false },
+        { text: "我对事不对人，很少记仇。", dim: "A", reverse: false },
+        { text: "面对客诉，我容易感到紧张和自责。", dim: "N", reverse: false },
+        { text: "我经常担心业绩是否达标。", dim: "N", reverse: false },
+        { text: "工作的压力会导致我失眠或情绪低落。", dim: "N", reverse: false },
+        { text: "我很少因为小事而烦躁不安。(R)", dim: "N", reverse: true },
+        { text: "遇到严厉的顾客批评，我会难过很久。", dim: "N", reverse: false },
+        { text: "我能够很快从失败或拒绝中恢复。(R)", dim: "N", reverse: true },
+        { text: "我容易因为排班变动而焦虑。", dim: "N", reverse: false },
+        { text: "我对自己要求高，但常常担忧表现不好。", dim: "N", reverse: false },
+        { text: "我心态平和，很少被外界评价影响。(R)", dim: "N", reverse: true },
+        { text: "在忙碌时段，我会觉得压力大到无法集中。", dim: "N", reverse: false },
+        { text: "我时常担心客户不满意我的服务。", dim: "N", reverse: false },
+        { text: "我能够从容应对工作中的突发状况。(R)", dim: "N", reverse: true }
+    ];
+
+    let userAnswers = new Array(questions.length).fill(null);
+    let currentResultVisible = false;
+
+    let timerInterval = null;
+    let startTime = null;
+    let timerRunning = true;
+    const timerElement = document.getElementById('timerValue');
+
+    function formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+
+    function updateTimerDisplay() {
+        if (!startTime) return;
+        const elapsed = Math.floor((Date.now() - startTime) / 1000);
+        if (timerElement) timerElement.innerText = formatTime(elapsed);
+    }
+
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        startTime = Date.now();
+        timerInterval = setInterval(() => {
+            if (timerRunning && startTime) updateTimerDisplay();
+        }, 1000);
+        updateTimerDisplay();
+    }
+
+    function resetTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        startTimer();
+    }
+
+    function getCurrentElapsedSeconds() {
+        if (!startTime) return 0;
+        return Math.floor((Date.now() - startTime) / 1000);
+    }
+
+    startTimer();
+
+    const STORAGE_KEY = "skin79_bigfive_answers";
+    function saveToLocalStorage() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(userAnswers));
+    }
+    function loadFromLocalStorage() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed && parsed.length === questions.length) userAnswers = parsed;
+            } catch(e) {}
+        }
+        if (userAnswers.length !== questions.length) userAnswers = new Array(questions.length).fill(null);
+    }
+
+    function updateProgressAndStats() {
+        const answered = userAnswers.filter(v => v !== null).length;
+        const percent = (answered / questions.length) * 100;
+        const fill = document.getElementById('progressFill');
+        const statsSpan = document.getElementById('progressStats');
+        if (fill) fill.style.width = `${percent}%`;
+        if (statsSpan) statsSpan.innerText = `${answered} / ${questions.length}`;
+        const resultCard = document.getElementById('resultCard');
+        if (resultCard && resultCard.style.display !== 'none' && currentResultVisible === true) {
+            resultCard.style.display = 'none';
+            currentResultVisible = false;
+        }
+    }
+
+    function highlightSelected(qIndex, selectedVal) {
+        const qDiv = document.querySelectorAll('.question-item')[qIndex];
+        if (!qDiv) return;
+        const labels = qDiv.querySelectorAll('.option-label');
+        labels.forEach(label => {
+            const radio = label.previousElementSibling;
+            if (radio && parseInt(radio.value) === selectedVal) label.classList.add('selected');
+            else label.classList.remove('selected');
+        });
+    }
+
+    function setAnswer(qIndex, value) {
+        if (userAnswers[qIndex] === value) return;
+        userAnswers[qIndex] = value;
+        highlightSelected(qIndex, value);
+        updateProgressAndStats();
+        saveToLocalStorage();
+    }
+
+    function renderQuestions() {
+        const container = document.getElementById('questionsArea');
+        if (!container) return;
+        container.innerHTML = '';
+        questions.forEach((q, idx) => {
+            const qDiv = document.createElement('div');
+            qDiv.className = 'question-item';
+            const qText = document.createElement('div');
+            qText.className = 'q-text';
+            qText.innerText = `${idx+1}. ${q.text}`;
+            qDiv.appendChild(qText);
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            const labels = ['非常不同意', '不同意', '中立', '同意', '非常同意'];
+            for (let val = 1; val <= 5; val++) {
+                const radioId = `q_${idx}_${val}`;
+                const label = document.createElement('label');
+                label.className = 'option-label';
+                label.htmlFor = radioId;
+                label.innerText = labels[val-1];
+                const radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = `question_${idx}`;
+                radio.value = val;
+                radio.id = radioId;
+                radio.addEventListener('change', ((i, v) => () => setAnswer(i, v))(idx, val));
+                optionsDiv.appendChild(radio);
+                optionsDiv.appendChild(label);
+                if (userAnswers[idx] === val) {
+                    radio.checked = true;
+                    label.classList.add('selected');
+                }
+            }
+            qDiv.appendChild(optionsDiv);
+            container.appendChild(qDiv);
+        });
+        updateProgressAndStats();
+    }
+
+    function computeScores() {
+        let dimScores = { O: { raw:0, count:0 }, C: { raw:0, count:0 }, E: { raw:0, count:0 }, A: { raw:0, count:0 }, N: { raw:0, count:0 } };
+        for (let i = 0; i < questions.length; i++) {
+            const q = questions[i];
+            let answer = userAnswers[i];
+            if (answer === null) continue;
+            let score = answer;
+            if (q.reverse) score = 6 - answer;
+            dimScores[q.dim].raw += score;
+            dimScores[q.dim].count += 1;
+        }
+        let result = {};
+        for (let dim of ['O','C','E','A','N']) {
+            const cnt = dimScores[dim].count;
+            if (cnt === 0) continue;
+            const raw = dimScores[dim].raw;
+            const min = cnt * 1;
+            const max = cnt * 5;
+            let norm = ((raw - min) / (max - min)) * 100;
+            result[dim] = Math.round(Math.min(100, Math.max(0, norm)));
+        }
+        const stability = 100 - result.N;
+        return { O: result.O, C: result.C, E: result.E, A: result.A, stability };
+    }
+
+    function getLevel(score) {
+        if (score >= 70) return { text: "高 · 优势显著", class: "level-high" };
+        if (score >= 40) return { text: "中 · 潜力可塑", class: "level-mid" };
+        return { text: "低 · 待发展", class: "level-low" };
+    }
+
+    function getAdviceForDimension(dimKey, score) {
+        const adviceMap = {
+            E: score>=70 ? "社交活跃度突出：天生销售王者，善于破冰及客情维护，适合标杆顾问岗" : (score>=40 ? "外向性适中：基本沟通自然，刻意练习主动邀约可大幅提升业绩" : "内敛沉稳：适合技术型/深度服务岗，可搭配销售搭档发挥优势"),
+            C: score>=70 ? "极致尽责：SOP执行者，服务品质标杆，店长储备人才" : (score>=40 ? "尽责性良好：基础规范扎实，建立清单习惯可晋升骨干" : "灵活随性：需加强服务流程意识，建议使用带教手册强化细节"),
+            A: score>=70 ? "高共情天赋：让客户产生强情感链接，复购率之王" : (score>=40 ? "宜人性适中：平衡业绩与客户感受，能适应不同顾客" : "结果导向强：销售力度大，需加强同理心训练提升满意度"),
+            O: score>=70 ? "好奇创新：热衷新技术成分，培训专家/项目研发潜力" : (score>=40 ? "开放度适中：可塑性强，定期学习激励可拓宽技能" : "偏好稳定：擅长标准执行，技术骨干最佳人选"),
+            stability: score>=70 ? "情绪韧性极佳：抗压超群，能从容应对繁忙时段及客诉" : (score>=40 ? "情绪调节力中等：配备正向反馈环境，可稳定发挥" : "高敏感型：需安全感与鼓励式管理，谨慎高压岗位")
+        };
+        return adviceMap[dimKey] || "具备基础适应力，定向培养可提升";
+    }
+
+    function generateFiveFactorTable(scores, elapsedSec) {
+        const dims = [
+            { key: "E", name: "外向性 · 社交活力", score: scores.E },
+            { key: "C", name: "尽责性 · 执行自律", score: scores.C },
+            { key: "A", name: "宜人性 · 共情服务", score: scores.A },
+            { key: "O", name: "开放性 · 好奇创新", score: scores.O },
+            { key: "stability", name: "情绪稳定性 · 抗压韧劲", score: scores.stability }
+        ];
+        let rows = '';
+        for (let d of dims) {
+            const levelObj = getLevel(d.score);
+            const advice = getAdviceForDimension(d.key, d.score);
+            rows += `<tr>
+                        <td style="font-weight:600;">${d.name}</td>
+                        <td><strong>${d.score}</strong> 分</td>
+                        <td><span class="level-badge ${levelObj.class}">${levelObj.text}</span></td>
+                        <td style="text-align:left; font-size:0.8rem;">${advice}</td>
+                     </tr>`;
+        }
+        const timeStr = formatTime(elapsedSec);
+        return `<div style="margin-top:0.5rem;"><div class="timer-used">⏱️ 测评完成耗时：${timeStr}</div></div>
+                <div class="results-table-wrapper">
+                <table class="personality-table">
+                    <thead>
+                        <tr><th>核心人格维度</th><th>得分 (0-100)</th><th>等级评估</th><th>美肌适配建议</th></tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                </div>`;
+    }
+
+    function getProfessionalInterpretation(scores) {
+        const { O, C, E, A, stability } = scores;
+        let traits = [];
+        if (E >= 70) traits.push("🔥 社交活跃 · 天生美肌顾问明星，拓客与客情维护双优");
+        else if (E >= 45) traits.push("📌 外向适中 · 能胜任日常沟通，再提升主动性能成为业绩标杆");
+        else traits.push("🌿 内敛沉稳 · 适合高端深度服务型美肌岗位");
+        if (C >= 70) traits.push("📋 尽责自律 · 细节控服务流程完美，客户信任度高");
+        else if (C >= 45) traits.push("✅ 尽责性良好 · 有职业素养，优化服务标准可进阶");
+        else traits.push("🌀 灵活随性 · 建议使用查核清单固化服务习惯");
+        if (A >= 70) traits.push("❤️ 高同理心 · 客户粘性王者，适合高端VIP管家岗");
+        else if (A >= 45) traits.push("🤝 宜人性适中 · 能兼顾门店业绩与温情服务");
+        else traits.push("⚡ 结果导向型 · 销售爆发力强，注意共情训练提升复购");
+        if (O >= 70) traits.push("💡 好奇创新 · 热衷新成分仪器，可发展为培训专家");
+        else if (O >= 45) traits.push("📚 开放度中等 · 定期技术学习可拓展能力边界");
+        else traits.push("🏛️ 偏好稳定 · 标准执行优秀骨干");
+        if (stability >= 70) traits.push("🛡️ 情绪稳定 · 抗压王者，能胜任店务管理及棘手客诉");
+        else if (stability >= 45) traits.push("🌊 情绪调节力中等 · 导师帮带潜力激发");
+        else traits.push("🎭 高敏感型 · 需温暖氛围，可往技术深耕方向发展");
+        
+        let summary = "";
+        if (E >= 60 && C >= 60 && stability >= 55) {
+            summary = "🏆 高度适配「优秀美肌顾问」标杆画像！外向、尽责、抗压三核驱动，具备店长储备潜力。";
+        } else if ((E >= 50 && A >= 60) || (C >= 65 && stability >= 50)) {
+            summary = "🌟 基础条件优秀，通过系统带教可快速成为门店核心业绩骨干。";
+        } else if (C < 40 && A < 40) {
+            summary = "📌 服务规范与共情力待提升，建议强化职业素养训练，发挥其他潜能。";
+        } else {
+            summary = "✅ 具备美业可塑性，从技术顾问或助理岗起步，未来管理通道可期。";
+        }
+        return { detail: traits.join("； "), summary };
+    }
+
+    async function sendToBackend(scores, elapsedSec, summary, city, store, name) {
+        const statusEl = document.getElementById('uploadStatus');
+        statusEl.className = 'upload-status loading';
+        statusEl.innerText = '📤 正在同步数据至总部后台...';
+        statusEl.style.display = 'block';
+        
+        try {
+            const res = await fetch(CLOUD_FUNCTION_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    scores,
+                    city,
+                    store,
+                    name,
+                    timeUsed: formatTime(elapsedSec),
+                    summary,
+                    deviceInfo: navigator.userAgent.substring(0, 200)
+                })
+            });
+            const result = await res.json();
+            if (result.success) {
+                statusEl.className = 'upload-status success';
+                statusEl.innerText = '✅ 数据已成功同步至总部后台';
+            } else {
+                throw new Error(result.error || '同步失败');
+            }
+        } catch (e) {
+            console.error('上报异常:', e);
+            statusEl.className = 'upload-status error';
+            statusEl.innerText = '❌ 数据同步失败：' + e.message;
+        }
+    }
+
+    function showResults() {
+        const city = document.getElementById('userCity')?.value.trim();
+        const store = document.getElementById('userStore')?.value.trim();
+        const name = document.getElementById('userName')?.value.trim();
+        
+        if (!city || !store || !name) {
+            alert('请填写城市、门店和姓名后再提交～');
+            if (!city) document.getElementById('userCity')?.focus();
+            else if (!store) document.getElementById('userStore')?.focus();
+            else document.getElementById('userName')?.focus();
+            return;
+        }
+
+        const unanswered = userAnswers.filter(v => v === null).length;
+        if (unanswered > 0) {
+            alert(`⏳ 还有 ${unanswered} 道题未完成，请完成全部60题后获取专业报告～`);
+            const firstNull = userAnswers.findIndex(v => v === null);
+            if (firstNull !== -1) {
+                const items = document.querySelectorAll('.question-item');
+                if (items[firstNull]) items[firstNull].scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+            return;
+        }
+
+        const scores = computeScores();
+        const elapsedSec = getCurrentElapsedSeconds();
+
+        const resultDiv = document.getElementById('resultContent');
+        resultDiv.innerHTML = '';
+        const dimensionsChart = [
+            { name: "外向性 · 社交影响力", score: scores.E, color: "#b28b5e" },
+            { name: "尽责性 · 服务执行力", score: scores.C, color: "#9c6e42" },
+            { name: "宜人性 · 共情协作力", score: scores.A, color: "#c28a58" },
+            { name: "开放性 · 学习创新力", score: scores.O, color: "#b07b47" },
+            { name: "情绪稳定性 · 抗压复原力", score: scores.stability, color: "#8c5e35" }
+        ];
+        dimensionsChart.forEach(d => {
+            const row = document.createElement('div');
+            row.className = 'dimension-row';
+            row.innerHTML = `<div class="dimension-name"><span>${d.name}</span><span><strong>${d.score}</strong> 分</span></div>
+                             <div class="bar-bg"><div class="bar-fill" style="width: ${d.score}%; background: ${d.color};"></div></div>`;
+            resultDiv.appendChild(row);
+        });
+
+        const tableHtml = generateFiveFactorTable(scores, elapsedSec);
+        const tableArea = document.getElementById('tableResultArea');
+        tableArea.innerHTML = tableHtml;
+        
+        const interp = getProfessionalInterpretation(scores);
+        const interpretDiv = document.getElementById('interpretText');
+        interpretDiv.innerHTML = `<strong>✨ 综合职业画像</strong><br>${interp.detail}<br><br>📌 核心建议：${interp.summary}<br><br>💡 本测评基于大五人格与美业百万数据校准，高尽责+高情绪稳定为胜任基础，高外向+高宜人性为销售服务双优基因。`;
+        
+        document.getElementById('resultCard').style.display = 'block';
+        currentResultVisible = true;
+        window.scrollTo({ top: document.getElementById('resultCard').offsetTop - 30, behavior: 'smooth' });
+
+        sendToBackend(scores, elapsedSec, interp.summary, city, store, name);
+    }
+
+    function resetAssessment() {
+        if (confirm('重置将清除所有答案、本地进度并重新计时。确定重新测评吗？')) {
+            userAnswers = new Array(questions.length).fill(null);
+            saveToLocalStorage();
+            renderQuestions();
+            document.getElementById('resultCard').style.display = 'none';
+            currentResultVisible = false;
+            document.getElementById('uploadStatus').style.display = 'none';
+            document.getElementById('userCity').value = '';
+            document.getElementById('userStore').value = '';
+            document.getElementById('userName').value = '';
+            updateProgressAndStats();
+            resetTimer();
+        }
+    }
+
+    function init() {
+        loadFromLocalStorage();
+        renderQuestions();
+        document.getElementById('submitBtn').addEventListener('click', showResults);
+        document.getElementById('resetBtn').addEventListener('click', resetAssessment);
+    }
+    init();
+</script>
+</body>
+</html>
