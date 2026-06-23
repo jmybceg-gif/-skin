@@ -198,21 +198,18 @@
             border: 1px solid #f0e6da;
         }
 
-        /* NPS 直接评分区域 */
         .nps-container { margin-top: 30px; border-top: 1px solid #e2d4c7; padding-top: 20px; }
         .nps-container h3 { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; color: #3a2c21; }
         .nps-question { font-size: 0.9rem; color: #5f5346; margin-bottom: 0.8rem; }
-        .nps-input-area {
-            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
-            justify-content: center; margin-bottom: 0.8rem;
+        .nps-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.8rem; }
+        .nps-btn {
+            width: 40px; height: 40px; border-radius: 50%; border: 2px solid #d6cbbc;
+            background: #faf6f0; font-weight: 600; font-size: 0.9rem; color: #4a3727;
+            cursor: pointer; transition: 0.15s; display: inline-flex;
+            align-items: center; justify-content: center;
         }
-        .nps-input {
-            width: 80px; padding: 0.6rem; font-size: 1.2rem; font-weight: 600;
-            text-align: center; border: 2px solid #d6cbbc; border-radius: 12px;
-            background: #faf6f0; color: #4a3727; font-family: inherit;
-        }
-        .nps-input:focus { outline: none; border-color: #b28b5e; background: #fff; }
-        .nps-label { font-size: 0.85rem; color: #8b7a6b; }
+        .nps-btn:hover { border-color: #b28b5e; background: #f0e6d8; }
+        .nps-btn.active { border-color: #8b5a2b; background: #e9ddd1; color: #4a3727; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
         .nps-result { text-align: center; font-weight: 500; font-size: 1rem; min-height: 2.2rem; padding: 0.4rem; border-radius: 30px; background: #f8f3ec; margin: 0.5rem 0; }
         .nps-thanks { text-align: center; font-size: 0.9rem; color: #6e5a48; padding: 0.6rem 0 0.2rem; }
 
@@ -225,7 +222,6 @@
         .upload-status.error { background: #f8d7da; color: #721c24; display: block; }
         .upload-status.loading { background: #fff3cd; color: #856404; display: block; }
 
-        /* 管理后台 */
         .admin-panel {
             display: none;
             margin-top: 20px;
@@ -308,8 +304,8 @@
     <div class="card" id="surveyCard">
         <h2>✨ 优秀美肌顾问人格特质测评</h2>
         <div class="intro-text">
-            🌟 本测评基于心理学大五人格（OCEAN） <br>
-            共60题，约6-10分钟。请根据第一直觉作答，生成"五大结果表格+特质解读"，精准识别美业高潜人才。
+            🌟 顶尖美肌顾问 = 社交敏锐 + 高度尽责 + 持续求知 + 情绪韧性 + 极致共情。<br>
+            本测评基于心理学大五人格（OCEAN），共60题，约6-10分钟。请根据第一直觉作答，生成"五大结果表格+特质解读"，精准识别美业高潜人才。
         </div>
 
         <!-- 信息收集区 -->
@@ -330,18 +326,15 @@
         </div>
         <div id="questionsArea"></div>
 
-        <!-- NPS 直接评分 -->
+        <!-- NPS 评分 -->
         <div class="nps-container" id="npsSection">
             <h3>📢 推荐意愿评分</h3>
             <div class="nps-question">
                 您有多大可能向朋友或同事推荐 <strong>Skin79 美肌顾问测评</strong>？<br>
                 <span style="font-size:0.8rem; color:#8b7a6b;">0 = 完全不可能，10 = 极有可能</span>
             </div>
-            <div class="nps-input-area">
-                <input type="number" id="npsInput" class="nps-input" min="0" max="10" placeholder="0-10">
-                <span class="nps-label">分</span>
-            </div>
-            <div class="nps-result" id="npsResult">请输入 0-10 的评分</div>
+            <div class="nps-buttons" id="npsButtons"></div>
+            <div class="nps-result" id="npsResult">请点击上方数字评分</div>
             <div class="nps-thanks" id="npsThanks"></div>
         </div>
 
@@ -400,7 +393,7 @@
         </div>
     </div>
 
-    <footer>Skin79 连锁美业人才发展中心 | 仅供内部潜能开发参考</footer>
+    <footer>Skin79 连锁美业人才发展中心 | 测评结果精准匹配"优秀美肌顾问"核心特质，仅供内部潜能开发参考</footer>
 </div>
 
 <script>
@@ -409,7 +402,6 @@
     // ==============================================================
     const GOOGLE_SHEETS_URL = "https://script.google.com/macros/s/AKfycbwBXmJHMU6XGJeaekMIz4rQn0eR-W-KSg4zZmIQluvo9cB9TWBdWR2X7Vv8KqK5TU7dRg/exec";
 
-    // 本地存储密钥
     const STORAGE_KEY_ANSWERS = 'skin79_bigfive_answers';
     const STORAGE_KEY_RECORDS = 'skin79_admin_records';
     const ADMIN_PASSWORD = 'admin123';
@@ -523,34 +515,59 @@
 
     startTimer();
 
-    // ---------- localStorage ----------
+    // ---------- localStorage (修复：增加异常捕获) ----------
     function saveAnswersToLocal() {
-        localStorage.setItem(STORAGE_KEY_ANSWERS, JSON.stringify(userAnswers));
-    }
-    function loadAnswersFromLocal() {
-        const saved = localStorage.getItem(STORAGE_KEY_ANSWERS);
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed && parsed.length === questions.length) userAnswers = parsed;
-            } catch(e) {}
+        try {
+            localStorage.setItem(STORAGE_KEY_ANSWERS, JSON.stringify(userAnswers));
+        } catch(e) {
+            console.warn('保存答案失败', e);
         }
-        if (userAnswers.length !== questions.length) userAnswers = new Array(questions.length).fill(null);
+    }
+
+    function loadAnswersFromLocal() {
+        try {
+            const saved = localStorage.getItem(STORAGE_KEY_ANSWERS);
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                if (parsed && parsed.length === questions.length) {
+                    userAnswers = parsed;
+                    return;
+                }
+            }
+        } catch(e) {
+            console.warn('读取本地答案失败，将重新初始化', e);
+            // 数据损坏，清除无效条目
+            localStorage.removeItem(STORAGE_KEY_ANSWERS);
+        }
+        // 如果数据无效或不存在，重置为 null 数组
+        userAnswers = new Array(questions.length).fill(null);
     }
 
     function getRecords() {
-        const d = localStorage.getItem(STORAGE_KEY_RECORDS);
-        if (d) { try { return JSON.parse(d); } catch(e) {} }
+        try {
+            const d = localStorage.getItem(STORAGE_KEY_RECORDS);
+            if (d) return JSON.parse(d);
+        } catch(e) {
+            console.warn('读取记录失败', e);
+            localStorage.removeItem(STORAGE_KEY_RECORDS);
+        }
         return [];
     }
+
     function saveRecords(r) {
-        localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(r));
+        try {
+            localStorage.setItem(STORAGE_KEY_RECORDS, JSON.stringify(r));
+        } catch(e) {
+            console.warn('保存记录失败', e);
+        }
     }
+
     function addRecord(r) {
         const records = getRecords();
         records.push(r);
         saveRecords(records);
     }
+
     function clearRecords() {
         if (confirm('确定要清空所有本地测评记录吗？此操作不可恢复！')) {
             saveRecords([]);
@@ -558,11 +575,18 @@
         }
     }
 
-    // ---------- 渲染题目 ----------
+    // ---------- 渲染题目 (增加错误防护) ----------
     function renderQuestions() {
         const container = document.getElementById('questionsArea');
-        if (!container) return;
+        if (!container) {
+            console.error('questionsArea 元素不存在');
+            return;
+        }
         container.innerHTML = '';
+        if (!questions || questions.length === 0) {
+            container.innerHTML = '<p style="color:red;">题库加载失败，请刷新页面。</p>';
+            return;
+        }
         questions.forEach((q, idx) => {
             const qDiv = document.createElement('div');
             qDiv.className = 'question-item';
@@ -587,6 +611,7 @@
                 radio.addEventListener('change', ((i, v) => () => setAnswer(i, v))(idx, val));
                 optionsDiv.appendChild(radio);
                 optionsDiv.appendChild(label);
+                // 恢复已选状态
                 if (userAnswers[idx] === val) {
                     radio.checked = true;
                     label.classList.add('selected');
@@ -631,30 +656,40 @@
         }
     }
 
-    // ---------- NPS 直接输入 ----------
+    // ---------- NPS (增加安全处理) ----------
     function initNPS() {
-        const input = document.getElementById('npsInput');
-        if (!input) return;
-
-        input.addEventListener('input', function() {
-            let val = parseInt(this.value);
-            if (isNaN(val) || val < 0 || val > 10) {
-                npsValue = null;
-                document.getElementById('npsResult').innerText = '请输入 0-10 的评分';
-                document.getElementById('npsThanks').innerHTML = '';
-                return;
-            }
-            npsValue = val;
-            let cat = '', desc = '';
-            if (val >= 9) { cat = '🌟 推荐者 (Promoter)'; desc = '您是我们的忠实粉丝，感谢您的认可！'; }
-            else if (val >= 7) { cat = '👍 被动者 (Passive)'; desc = '您感觉满意，但仍有提升空间，我们会继续努力。'; }
-            else { cat = '😟 贬损者 (Detractor)'; desc = '很抱歉没能让您满意，我们会认真改进。'; }
-            document.getElementById('npsResult').innerHTML = `<strong>${cat}</strong><br><span style="font-size:0.9rem;">${desc}</span>`;
-            document.getElementById('npsThanks').innerHTML = '感谢您的反馈，这将帮助我们做得更好！ 🙏';
-        });
+        const container = document.getElementById('npsButtons');
+        if (!container) return;
+        container.innerHTML = '';
+        for (let i = 0; i <= 10; i++) {
+            const radioId = `nps_${i}`;
+            const radio = document.createElement('input');
+            radio.type = 'radio';
+            radio.name = 'nps';
+            radio.value = i;
+            radio.id = radioId;
+            const label = document.createElement('label');
+            label.htmlFor = radioId;
+            label.className = 'nps-btn';
+            label.innerText = i;
+            label.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nps-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                npsValue = parseInt(this.innerText);
+                let cat = '', desc = '';
+                if (npsValue >= 9) { cat = '🌟 推荐者 (Promoter)'; desc = '您是我们的忠实粉丝，感谢您的认可！'; }
+                else if (npsValue >= 7) { cat = '👍 被动者 (Passive)'; desc = '您感觉满意，但仍有提升空间，我们会继续努力。'; }
+                else { cat = '😟 贬损者 (Detractor)'; desc = '很抱歉没能让您满意，我们会认真改进。'; }
+                document.getElementById('npsResult').innerHTML = `<strong>${cat}</strong><br><span style="font-size:0.9rem;">${desc}</span>`;
+                document.getElementById('npsThanks').innerHTML = '感谢您的反馈，这将帮助我们做得更好！ 🙏';
+            });
+            container.appendChild(radio);
+            container.appendChild(label);
+        }
     }
 
-    // ---------- 计算与解读 ----------
+    // ---------- 计算与解读 (保持不变) ----------
     function computeScores() {
         let dimScores = { O: { raw:0, count:0 }, C: { raw:0, count:0 }, E: { raw:0, count:0 }, A: { raw:0, count:0 }, N: { raw:0, count:0 } };
         for (let i = 0; i < questions.length; i++) {
@@ -768,7 +803,7 @@
     async function sendToGoogleSheets(data) {
         const statusEl = document.getElementById('uploadStatus');
         statusEl.className = 'upload-status loading';
-        statusEl.innerText = '📤 正在同步数据...';
+        statusEl.innerText = '📤 正在同步数据至总部后台...';
         statusEl.style.display = 'block';
 
         try {
@@ -780,7 +815,7 @@
             const result = await res.json();
             if (result.success) {
                 statusEl.className = 'upload-status success';
-                statusEl.innerText = '✅ 数据已成功同步';
+                statusEl.innerText = '✅ 数据已成功同步至总部后台';
             } else {
                 throw new Error(result.error || '同步失败');
             }
@@ -902,8 +937,8 @@
             document.getElementById('userStore').value = '';
             document.getElementById('userName').value = '';
             npsValue = null;
-            document.getElementById('npsInput').value = '';
-            document.getElementById('npsResult').innerText = '请输入 0-10 的评分';
+            document.querySelectorAll('.nps-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('npsResult').innerText = '请点击上方数字评分';
             document.getElementById('npsThanks').innerHTML = '';
             updateProgressAndStats();
             resetTimer();
@@ -944,14 +979,12 @@
     function exportCSV() {
         const records = getRecords();
         if (records.length === 0) { alert('暂无数据可导出'); return; }
-        let csv = '城市,门店,姓名,提交时间,开放性,尽责性,外向性,宜人性,情绪稳定性,综合等级,NPS,用时
-';
+        let csv = '城市,门店,姓名,提交时间,开放性,尽责性,外向性,宜人性,情绪稳定性,综合等级,NPS,用时\n';
         records.forEach(r => {
             const s = r.scores || {};
-            csv += `${r.city || ''},${r.store || ''},${r.name || '匿名'},${r.timestamp},${s.O || ''},${s.C || ''},${s.E || ''},${s.A || ''},${s.stability || ''},${r.level || ''},${r.nps || ''},${r.elapsed || ''}
-`;
+            csv += `${r.city || ''},${r.store || ''},${r.name || '匿名'},${r.timestamp},${s.O || ''},${s.C || ''},${s.E || ''},${s.A || ''},${s.stability || ''},${r.level || ''},${r.nps || ''},${r.elapsed || ''}\n`;
         });
-        const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+        const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(blob);
         link.download = `Skin79_测评记录_${new Date().toISOString().slice(0, 10)}.csv`;
@@ -1025,14 +1058,20 @@
 
     // ---------- 初始化 ----------
     function init() {
-        loadAnswersFromLocal();
+        loadAnswersFromLocal();      // 现在带 try-catch，安全
         renderQuestions();
         initNPS();
+        // 绑定事件
         document.getElementById('submitBtn').addEventListener('click', showResults);
         document.getElementById('resetBtn').addEventListener('click', resetAssessment);
         document.getElementById('adminPanel').classList.remove('show');
+
+        // 如果之前有保存的答案，恢复高亮状态（已由 renderQuestions 处理）
+        console.log('✅ 测评已初始化，题目数：', questions.length);
     }
-    init();
+
+    // 页面加载时执行
+    document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
