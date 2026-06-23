@@ -198,19 +198,21 @@
             border: 1px solid #f0e6da;
         }
 
-        /* NPS 区域 */
+        /* NPS 直接评分区域 */
         .nps-container { margin-top: 30px; border-top: 1px solid #e2d4c7; padding-top: 20px; }
         .nps-container h3 { font-weight: 600; font-size: 1.1rem; margin-bottom: 0.5rem; color: #3a2c21; }
         .nps-question { font-size: 0.9rem; color: #5f5346; margin-bottom: 0.8rem; }
-        .nps-buttons { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-bottom: 0.8rem; }
-        .nps-btn {
-            width: 40px; height: 40px; border-radius: 50%; border: 2px solid #d6cbbc;
-            background: #faf6f0; font-weight: 600; font-size: 0.9rem; color: #4a3727;
-            cursor: pointer; transition: 0.15s; display: inline-flex;
-            align-items: center; justify-content: center;
+        .nps-input-area {
+            display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+            justify-content: center; margin-bottom: 0.8rem;
         }
-        .nps-btn:hover { border-color: #b28b5e; background: #f0e6d8; }
-        .nps-btn.active { border-color: #8b5a2b; background: #e9ddd1; color: #4a3727; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .nps-input {
+            width: 80px; padding: 0.6rem; font-size: 1.2rem; font-weight: 600;
+            text-align: center; border: 2px solid #d6cbbc; border-radius: 12px;
+            background: #faf6f0; color: #4a3727; font-family: inherit;
+        }
+        .nps-input:focus { outline: none; border-color: #b28b5e; background: #fff; }
+        .nps-label { font-size: 0.85rem; color: #8b7a6b; }
         .nps-result { text-align: center; font-weight: 500; font-size: 1rem; min-height: 2.2rem; padding: 0.4rem; border-radius: 30px; background: #f8f3ec; margin: 0.5rem 0; }
         .nps-thanks { text-align: center; font-size: 0.9rem; color: #6e5a48; padding: 0.6rem 0 0.2rem; }
 
@@ -306,8 +308,8 @@
     <div class="card" id="surveyCard">
         <h2>✨ 优秀美肌顾问人格特质测评</h2>
         <div class="intro-text">
-            🌟  本测评基于心理学大五人格（OCEAN）。<br>
-            本测评基于心理学大五人格（OCEAN），共60题，约6-10分钟。请根据第一直觉作答，生成"五大结果表格+特质解读"，精准识别美业高潜人才。
+            🌟 本测评基于心理学大五人格（OCEAN） <br>
+            共60题，约6-10分钟。请根据第一直觉作答，生成"五大结果表格+特质解读"，精准识别美业高潜人才。
         </div>
 
         <!-- 信息收集区 -->
@@ -328,15 +330,18 @@
         </div>
         <div id="questionsArea"></div>
 
-        <!-- NPS 评分 -->
+        <!-- NPS 直接评分 -->
         <div class="nps-container" id="npsSection">
             <h3>📢 推荐意愿评分</h3>
             <div class="nps-question">
                 您有多大可能向朋友或同事推荐 <strong>Skin79 美肌顾问测评</strong>？<br>
                 <span style="font-size:0.8rem; color:#8b7a6b;">0 = 完全不可能，10 = 极有可能</span>
             </div>
-            <div class="nps-buttons" id="npsButtons"></div>
-            <div class="nps-result" id="npsResult">请点击上方数字评分</div>
+            <div class="nps-input-area">
+                <input type="number" id="npsInput" class="nps-input" min="0" max="10" placeholder="0-10">
+                <span class="nps-label">分</span>
+            </div>
+            <div class="nps-result" id="npsResult">请输入 0-10 的评分</div>
             <div class="nps-thanks" id="npsThanks"></div>
         </div>
 
@@ -395,7 +400,7 @@
         </div>
     </div>
 
-    <footer>Skin79 连锁美业人才发展中心 | 测评结果精准匹配"优秀美肌顾问"核心特质，仅供内部潜能开发参考</footer>
+    <footer>Skin79 连锁美业人才发展中心 | 仅供内部潜能开发参考</footer>
 </div>
 
 <script>
@@ -626,37 +631,27 @@
         }
     }
 
-    // ---------- NPS ----------
+    // ---------- NPS 直接输入 ----------
     function initNPS() {
-        const container = document.getElementById('npsButtons');
-        if (!container) return;
-        container.innerHTML = '';
-        for (let i = 0; i <= 10; i++) {
-            const radioId = `nps_${i}`;
-            const radio = document.createElement('input');
-            radio.type = 'radio';
-            radio.name = 'nps';
-            radio.value = i;
-            radio.id = radioId;
-            const label = document.createElement('label');
-            label.htmlFor = radioId;
-            label.className = 'nps-btn';
-            label.innerText = i;
-            label.addEventListener('click', function(e) {
-                e.preventDefault();
-                document.querySelectorAll('.nps-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                npsValue = parseInt(this.innerText);
-                let cat = '', desc = '';
-                if (npsValue >= 9) { cat = '🌟 推荐者 (Promoter)'; desc = '您是我们的忠实粉丝，感谢您的认可！'; }
-                else if (npsValue >= 7) { cat = '👍 被动者 (Passive)'; desc = '您感觉满意，但仍有提升空间，我们会继续努力。'; }
-                else { cat = '😟 贬损者 (Detractor)'; desc = '很抱歉没能让您满意，我们会认真改进。'; }
-                document.getElementById('npsResult').innerHTML = `<strong>${cat}</strong><br><span style="font-size:0.9rem;">${desc}</span>`;
-                document.getElementById('npsThanks').innerHTML = '感谢您的反馈，这将帮助我们做得更好！ 🙏';
-            });
-            container.appendChild(radio);
-            container.appendChild(label);
-        }
+        const input = document.getElementById('npsInput');
+        if (!input) return;
+
+        input.addEventListener('input', function() {
+            let val = parseInt(this.value);
+            if (isNaN(val) || val < 0 || val > 10) {
+                npsValue = null;
+                document.getElementById('npsResult').innerText = '请输入 0-10 的评分';
+                document.getElementById('npsThanks').innerHTML = '';
+                return;
+            }
+            npsValue = val;
+            let cat = '', desc = '';
+            if (val >= 9) { cat = '🌟 推荐者 (Promoter)'; desc = '您是我们的忠实粉丝，感谢您的认可！'; }
+            else if (val >= 7) { cat = '👍 被动者 (Passive)'; desc = '您感觉满意，但仍有提升空间，我们会继续努力。'; }
+            else { cat = '😟 贬损者 (Detractor)'; desc = '很抱歉没能让您满意，我们会认真改进。'; }
+            document.getElementById('npsResult').innerHTML = `<strong>${cat}</strong><br><span style="font-size:0.9rem;">${desc}</span>`;
+            document.getElementById('npsThanks').innerHTML = '感谢您的反馈，这将帮助我们做得更好！ 🙏';
+        });
     }
 
     // ---------- 计算与解读 ----------
@@ -773,7 +768,7 @@
     async function sendToGoogleSheets(data) {
         const statusEl = document.getElementById('uploadStatus');
         statusEl.className = 'upload-status loading';
-        statusEl.innerText = '📤 正在同步数据至总部后台...';
+        statusEl.innerText = '📤 正在同步数据...';
         statusEl.style.display = 'block';
 
         try {
@@ -785,7 +780,7 @@
             const result = await res.json();
             if (result.success) {
                 statusEl.className = 'upload-status success';
-                statusEl.innerText = '✅ 数据已成功同步至总部后台';
+                statusEl.innerText = '✅ 数据已成功同步';
             } else {
                 throw new Error(result.error || '同步失败');
             }
@@ -907,8 +902,8 @@
             document.getElementById('userStore').value = '';
             document.getElementById('userName').value = '';
             npsValue = null;
-            document.querySelectorAll('.nps-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('npsResult').innerText = '请点击上方数字评分';
+            document.getElementById('npsInput').value = '';
+            document.getElementById('npsResult').innerText = '请输入 0-10 的评分';
             document.getElementById('npsThanks').innerHTML = '';
             updateProgressAndStats();
             resetTimer();
