@@ -565,13 +565,10 @@
 
 <script>
     // ============================================================
-    //  📌 配置区域 - 腾讯云函数 URL（用于数据同步）
+    //  📌 配置区域 - 腾讯云函数 URL（用于数据同步到腾讯文档）
     // ============================================================
-    // 如果你部署了腾讯云函数，将下面的 URL 替换为你的函数地址
-   const CLOUD_FUNCTION_URL = 'https://1258853028-93eekto192.ap-chengdu.tcencntscf.com';
-
-    // 如果暂时没有云函数，可以设置为 null，数据将只保存在本地
-    // const CLOUD_FUNCTION_URL = null;
+    // 注意域名是 tencentscf.com，不是 tcencntscf.com
+    const CLOUD_FUNCTION_URL = 'https://1258853028-93eekto192.ap-chengdu.tencentscf.com' ;
 
     const STORAGE_KEY_ANSWERS = 'skin79_bigfive_answers';
     const STORAGE_KEY_RECORDS = 'skin79_admin_records';
@@ -949,13 +946,12 @@
                 </div>`;
     }
 
-    // ============================================================
-    //  🚀 云端同步（通过云函数 URL）
+       // ============================================================
+    //  🚀 云端同步（通过云函数 URL → 腾讯文档）
     // ============================================================
     async function syncToCloud(data) {
         const statusEl = document.getElementById('uploadStatus');
 
-        // 如果没有配置云函数 URL，跳过同步
         if (!CLOUD_FUNCTION_URL) {
             statusEl.className = 'upload-status success';
             statusEl.textContent = '📌 数据已保存到本地（未配置云端同步）';
@@ -964,7 +960,7 @@
         }
 
         statusEl.className = 'upload-status loading';
-        statusEl.textContent = '📤 正在同步数据...';
+        statusEl.textContent = '📤 正在同步到腾讯文档...';
         statusEl.style.display = 'block';
 
         const controller = new AbortController();
@@ -973,28 +969,40 @@
         try {
             const response = await fetch(CLOUD_FUNCTION_URL, {
                 method: 'POST',
+                mode: 'cors',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(data),
                 signal: controller.signal
             });
             clearTimeout(timeoutId);
 
-            const result = await response.json();
-            if (result.success) {
+            if (!response.ok) {
+                throw new Error('HTTP ' + response.status);
+            }
+
+            let result = {};
+            try { result = await response.json(); } catch (_) {}
+
+            if (result.success === true) {
                 statusEl.className = 'upload-status success';
-                statusEl.textContent = '✅ 数据已同步到云端';
+                statusEl.textContent = '✅ 数据已写入腾讯文档';
             } else {
-                throw new Error(result.error || '同步失败');
+                throw new Error(result.error || result.message || '云端返回未成功');
             }
         } catch (e) {
             clearTimeout(timeoutId);
             console.error('同步异常:', e);
             statusEl.className = 'upload-status error';
+            let msg;
             if (e.name === 'AbortError') {
-                statusEl.textContent = '⏰ 同步超时，数据已保存到本地';
+                msg = '同步超时（15s）';
+            } else if (e instanceof TypeError) {
+                // CORS / 网络不通典型特征：TypeError
+                msg = '网络或跨域错误，请检查云函数 URL 与 CORS 配置';
             } else {
-                statusEl.textContent = '❌ 同步失败：' + e.message + '（数据已保存到本地）';
+                msg = e.message || '未知错误';
             }
+            statusEl.textContent = '❌ 同步失败：' + msg + '（数据已保存到本地）';
         }
     }
 
