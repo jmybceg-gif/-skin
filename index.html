@@ -139,7 +139,7 @@
         </div>
 
         <div class="info-collect">
-            <div class="info-collect-title">📍 请先填写基本信息（数据同步至飞书）</div>
+            <div class="info-collect-title">📍 请先填写基本信息（数据同步至腾讯文档）</div>
             <div class="info-collect-row">
                 <input type="text" id="userCity" placeholder="城市（如：成都）">
                 <input type="text" id="userStore" placeholder="门店（如：春熙路店）">
@@ -209,13 +209,18 @@
 </div>
 
 <script>
-   // ============================================================
-//  📌 飞书配置 - 已更新
-// ============================================================
-const FEISHU_APP_ID = "cli_aab0f321c6fb9cd9";
-const FEISHU_APP_SECRET = "QYIEaeFbGDCO97h2ivin9gnJA3gBahly";
-const FEISHU_APP_TOKEN = "Wds2bOgkPau0Dbs12SfczvWWnFd";
-const FEISHU_TABLE_ID = "tblKNXIAnEdLdvtd";
+    // ============================================================
+    //  📌 腾讯文档配置
+    // ============================================================
+    const TENCENT_ACCESS_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjbHQiOiI0MmVlYzc1MzVmNWY0YTgyODJlZjcxOTEwM2ZlOTFiNCIsInR5cCI6MSwiZXhwIjoxNzg0ODUxNTM2LjcwMTYsImlhdCI6MTc4MjI1OTUzNi43MDE2LCJzdWIiOiIxODk0OGYyYTBlZTg0NTExOWE0NDNjYTQwNzJlNWYwZiJ9.cVWapKJS0Yo_nKTzz7tA7JPb4KZz0bP1UDuGMJCThak";
+    const TENCENT_CLIENT_ID = "42eec7535f5f4a8282ef719103fe91b4";
+    // 从表格链接 https://docs.qq.com/sheet/DQ0x4Tnd0Qk12eWhr 中提取 file_id
+    // DQ0x4Tnd0Qk12eWhr 是 base64 编码的 file_id
+    const TENCENT_FILE_ID = "DQ0x4Tnd0Qk12eWhr";
+
+    const STORAGE_KEY_ANSWERS = 'skin79_bigfive_answers';
+    const STORAGE_KEY_RECORDS = 'skin79_admin_records';
+    const ADMIN_PASSWORD = 'admin123';
 
     // ============================================================
     //  60题题库
@@ -590,77 +595,102 @@ const FEISHU_TABLE_ID = "tblKNXIAnEdLdvtd";
     }
 
     // ============================================================
-    //  🚀 飞书同步（核心）
+    //  🚀 腾讯文档同步
     // ============================================================
-    async function getFeishuToken() {
-        const response = await fetch('https://open.feishu.cn/open-apis/auth/v3/tenant_access_token/internal', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json; charset=utf-8' },
-            body: JSON.stringify({
-                app_id: FEISHU_APP_ID,
-                app_secret: FEISHU_APP_SECRET
-            })
-        });
-        const data = await response.json();
-        if (data.code !== 0) {
-            throw new Error('获取token失败：' + data.msg);
-        }
-        return data.tenant_access_token;
-    }
-
-    async function sendToFeishu(data) {
+    async function syncToTencentDoc(data) {
         const statusEl = document.getElementById('uploadStatus');
         statusEl.className = 'upload-status loading';
-        statusEl.textContent = '📤 正在同步数据到飞书...';
+        statusEl.textContent = '📤 正在同步数据到腾讯文档...';
         statusEl.style.display = 'block';
 
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 15000);
 
         try {
-            // 1. 获取 token
-            const token = await getFeishuToken();
+            // 1. 先查询当前表格的行数
+            const infoUrl = `https://docs.qq.com/openapi/v2/sheet/${TENCENT_FILE_ID}/sheets-info`;
+            const infoRes = await fetch(infoUrl, {
+                method: 'GET',
+                headers: {
+                    'Access-Token': TENCENT_ACCESS_TOKEN,
+                    'Client-Id': TENCENT_CLIENT_ID
+                },
+                signal: controller.signal
+            });
+            const infoResult = await infoRes.json();
+            if (!infoResult || infoResult.ret !== 0) {
+                throw new Error('查询表格信息失败');
+            }
 
-            // 2. 构建记录（列名必须与飞书多维表格的列名完全一致）
-            const fields = {
-                '城市': data.city || '',
-                '门店': data.store || '',
-                '姓名': data.name || '',
-                '用时': data.timeUsed || '',
-                '开放性': data.scores.O || 0,
-                '尽责性': data.scores.C || 0,
-                '外向性': data.scores.E || 0,
-                '宜人性': data.scores.A || 0,
-                '情绪稳定性': data.scores.stability || 0,
-                '综合等级': data.level || '',
-                'NPS': data.nps || ''
+            // 获取第一个 sheet 的信息
+            const sheets = infoResult.data || [];
+            if (sheets.length === 0) {
+                throw new Error('表格中没有工作表');
+            }
+            const firstSheet = sheets[0];
+            const sheetId = firstSheet.sheetId;
+            const currentRowCount = firstSheet.rowTotal || 0;
+
+            // 2. 构建要写入的数据（二维数组）
+            const rowData = [
+                data.city || '',
+                data.store || '',
+                data.name || '',
+                data.timeUsed || '',
+                data.scores?.O || 0,
+                data.scores?.C || 0,
+                data.scores?.E || 0,
+                data.scores?.A || 0,
+                data.scores?.stability || 0,
+                data.level || '',
+                data.nps || ''
+            ];
+
+            // 3. 追加一行：从当前行数开始写入
+            const startRow = currentRowCount; // 当前行数即新行起始索引
+            const endRow = startRow + 1;
+            const startCol = 0;
+            const endCol = rowData.length;
+
+            const updateUrl = `https://docs.qq.com/openapi/v2/sheet/${TENCENT_FILE_ID}:batchUpdate`;
+            const updateBody = {
+                requests: [{
+                    updateCells: {
+                        range: {
+                            sheetId: sheetId,
+                            startRow: startRow,
+                            endRow: endRow,
+                            startColumn: startCol,
+                            endColumn: endCol
+                        },
+                        rows: [rowData],
+                        fields: '*'
+                    }
+                }]
             };
 
-            // 3. 写入飞书
-            const response = await fetch(
-                `https://open.feishu.cn/open-apis/bitable/v1/apps/${FEISHU_APP_TOKEN}/tables/${FEISHU_TABLE_ID}/records`,
-                {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json; charset=utf-8',
-                        'Authorization': `Bearer ${token}`
-                    },
-                    body: JSON.stringify({ fields }),
-                    signal: controller.signal
-                }
-            );
+            const updateRes = await fetch(updateUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Access-Token': TENCENT_ACCESS_TOKEN,
+                    'Client-Id': TENCENT_CLIENT_ID
+                },
+                body: JSON.stringify(updateBody),
+                signal: controller.signal
+            });
             clearTimeout(timeoutId);
 
-            const result = await response.json();
-            if (result.code === 0) {
+            const updateResult = await updateRes.json();
+            if (updateResult.ret === 0) {
                 statusEl.className = 'upload-status success';
-                statusEl.textContent = '✅ 数据已同步到飞书';
+                statusEl.textContent = '✅ 数据已同步到腾讯文档';
             } else {
-                throw new Error(result.msg || '飞书写入失败');
+                throw new Error(updateResult.msg || '腾讯文档写入失败');
             }
         } catch (e) {
             clearTimeout(timeoutId);
-            console.error('飞书同步异常:', e);
+            console.error('同步异常:', e);
             statusEl.className = 'upload-status error';
             if (e.name === 'AbortError') {
                 statusEl.textContent = '⏰ 同步超时，数据已保存到本地';
@@ -736,8 +766,8 @@ const FEISHU_TABLE_ID = "tblKNXIAnEdLdvtd";
         addRecord(record);
         if (document.getElementById('adminPanel').classList.contains('show')) renderAdminTable();
 
-        // 同步到飞书
-        await sendToFeishu({
+        // 同步到腾讯文档
+        await syncToTencentDoc({
             city,
             store,
             name,
@@ -898,9 +928,7 @@ const FEISHU_TABLE_ID = "tblKNXIAnEdLdvtd";
         document.getElementById('resultCard').style.display = 'none';
         currentResultVisible = false;
         console.log('✅ 初始化完成');
-        console.log('📤 飞书 App ID:', FEISHU_APP_ID);
-        console.log('📤 飞书 App Token:', FEISHU_APP_TOKEN);
-        console.log('📤 飞书 Table ID:', FEISHU_TABLE_ID);
+        console.log('📤 腾讯文档 File ID:', TENCENT_FILE_ID);
     }
 
     document.addEventListener('DOMContentLoaded', init);
